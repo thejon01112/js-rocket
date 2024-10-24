@@ -16,3 +16,8 @@
 - Avoid obstacles that appear on the screen
 - Collect power-ups to increase your score
 - The game ends if the rocket collides with an obstacle
+
+## Improving Graphics Quality
+- Use high-resolution images for the rocket, background, obstacles, and power-ups
+- Implement animations for the rocket and other game elements
+- Optimize the canvas rendering performance

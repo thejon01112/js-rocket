@@ -13,16 +13,17 @@ hello js rockets
         height: 40,
         speed: 2,
         dx: 0,
-        dy: 0
+        dy: 0,
+        image: new Image()
     };
+    rocket.image.src = 'rocket.png';
 
     let obstacles = [];
     let powerUps = [];
     let score = 0;
 
     function drawRocket() {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(rocket.x, rocket.y, rocket.width, rocket.height);
+        ctx.drawImage(rocket.image, rocket.x, rocket.y, rocket.width, rocket.height);
     }
 
     function drawObstacles() {
