@@ -1,6 +1,156 @@
 hello js rockets
 
-<script type="text/javascript">
-    console.log('hello there friends');
+<canvas id="gameCanvas" width="800" height="600"></canvas>
 
+<script type="text/javascript">
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let rocket = {
+        x: canvas.width / 2,
+        y: canvas.height - 30,
+        width: 20,
+        height: 40,
+        speed: 2,
+        dx: 0,
+        dy: 0
+    };
+
+    let obstacles = [];
+    let powerUps = [];
+    let score = 0;
+
+    function drawRocket() {
+        ctx.fillStyle = 'red';
+        ctx.fillRect(rocket.x, rocket.y, rocket.width, rocket.height);
+    }
+
+    function drawObstacles() {
+        ctx.fillStyle = 'gray';
+        obstacles.forEach(obstacle => {
+            ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        });
+    }
+
+    function drawPowerUps() {
+        ctx.fillStyle = 'green';
+        powerUps.forEach(powerUp => {
+            ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+        });
+    }
+
+    function drawScore() {
+        ctx.fillStyle = 'black';
+        ctx.font = '16px Arial';
+        ctx.fillText('Score: ' + score, 8, 20);
+    }
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function updateRocket() {
+        rocket.x += rocket.dx;
+        rocket.y += rocket.dy;
+
+        if (rocket.x < 0) rocket.x = 0;
+        if (rocket.x + rocket.width > canvas.width) rocket.x = canvas.width - rocket.width;
+        if (rocket.y < 0) rocket.y = 0;
+        if (rocket.y + rocket.height > canvas.height) rocket.y = canvas.height - rocket.height;
+    }
+
+    function updateObstacles() {
+        obstacles.forEach(obstacle => {
+            obstacle.y += obstacle.speed;
+        });
+
+        obstacles = obstacles.filter(obstacle => obstacle.y < canvas.height);
+    }
+
+    function updatePowerUps() {
+        powerUps.forEach(powerUp => {
+            powerUp.y += powerUp.speed;
+        });
+
+        powerUps = powerUps.filter(powerUp => powerUp.y < canvas.height);
+    }
+
+    function detectCollisions() {
+        obstacles.forEach(obstacle => {
+            if (rocket.x < obstacle.x + obstacle.width &&
+                rocket.x + rocket.width > obstacle.x &&
+                rocket.y < obstacle.y + obstacle.height &&
+                rocket.y + rocket.height > obstacle.y) {
+                // Collision detected
+                alert('Game Over! Your score: ' + score);
+                document.location.reload();
+            }
+        });
+
+        powerUps.forEach(powerUp => {
+            if (rocket.x < powerUp.x + powerUp.width &&
+                rocket.x + rocket.width > powerUp.x &&
+                rocket.y < powerUp.y + powerUp.height &&
+                rocket.y + rocket.height > powerUp.y) {
+                // Power-up collected
+                score += 10;
+                powerUps = powerUps.filter(p => p !== powerUp);
+            }
+        });
+    }
+
+    function generateObstacles() {
+        if (Math.random() < 0.02) {
+            let obstacle = {
+                x: Math.random() * (canvas.width - 30),
+                y: 0,
+                width: 30,
+                height: 30,
+                speed: 2
+            };
+            obstacles.push(obstacle);
+        }
+    }
+
+    function generatePowerUps() {
+        if (Math.random() < 0.01) {
+            let powerUp = {
+                x: Math.random() * (canvas.width - 20),
+                y: 0,
+                width: 20,
+                height: 20,
+                speed: 2
+            };
+            powerUps.push(powerUp);
+        }
+    }
+
+    function gameLoop() {
+        clearCanvas();
+        drawRocket();
+        drawObstacles();
+        drawPowerUps();
+        drawScore();
+        updateRocket();
+        updateObstacles();
+        updatePowerUps();
+        detectCollisions();
+        generateObstacles();
+        generatePowerUps();
+        requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp') rocket.dy = -rocket.speed;
+        if (e.key === 'ArrowDown') rocket.dy = rocket.speed;
+        if (e.key === 'ArrowLeft') rocket.dx = -rocket.speed;
+        if (e.key === 'ArrowRight') rocket.dx = rocket.speed;
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') rocket.dy = 0;
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') rocket.dx = 0;
+    });
+
+    gameLoop();
 </script>
